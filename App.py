@@ -1,9 +1,15 @@
 # app.py
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import re
 from io import BytesIO
+
+# Check for Plotly and provide user-friendly error message
+try:
+    import plotly.express as px
+except ModuleNotFoundError:
+    st.error("Plotly is not installed. Please install it using 'pip install plotly' or add it to requirements.txt.")
+    st.stop()
 
 # Function to clean and normalize column names
 def normalize_columns(df):
@@ -30,11 +36,9 @@ def process_query(df, query, col_types):
     query = query.lower().strip()
     
     # Handle missing values
-    df = df.fillna({'numeric': df.select_dtypes(include='number').mean(),
-                    'categorical': 'missing',
-                    'text': 'missing'})
+    df = df.fillna({col: df[col].mean() if col_types[col] == 'numeric' else 'missing' for col in df.columns})
     
-    # Statistical summaries
+    # Statistical summaries (e.g., "average income")
     if 'average' in query or 'mean' in query:
         for col in df.columns:
             if col_types[col] == 'numeric' and col in query:
@@ -68,7 +72,7 @@ def process_query(df, query, col_types):
                     fig = px.bar(result, x=group_col, y=agg_col, 
                                 title=f"{agg_col.replace('_', ' ')} by {group_col.replace('_', ' ')}",
                                 color_discrete_sequence=['#36A2EB'])
-                    return result.to_markdown(), fig
+                    return result.to_markdown(index=False), fig
     
     # Visualization queries (e.g., "show a bar chart of job")
     elif 'bar chart' in query or 'distribution' in query:
@@ -79,7 +83,7 @@ def process_query(df, query, col_types):
                 fig = px.bar(counts, x=col, y='count', 
                             title=f"Distribution of {col.replace('_', ' ')}",
                             color_discrete_sequence=['#FF6384'])
-                return counts.to_markdown(), fig
+                return counts.to_markdown(index=False), fig
     
     return "Sorry, I couldn't understand the query. Please try rephrasing!", None
 
