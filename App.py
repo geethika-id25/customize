@@ -8,24 +8,22 @@ from io import BytesIO
 try:
     import plotly.express as px
 except ModuleNotFoundError:
-    st.error("Plotly is not installed. Please add 'plotly==5.24.1' to requirements.txt and reboot the app.")
+    st.error("Plotly is not installed. Run 'pip install plotly==5.24.1' or add it to requirements.txt.")
     st.stop()
 
 try:
     import openpyxl
 except ModuleNotFoundError:
-    st.error("Openpyxl is not installed. Please add 'openpyxl==3.1.5' to requirements.txt and reboot the app.")
+    st.error("Openpyxl is not installed. Run 'pip install openpyxl==3.1.5' or add it to requirements.txt.")
     st.stop()
 
 # Function to clean and normalize column names
 def normalize_columns(df):
-    """Normalize column names by converting to lowercase and replacing special characters."""
     df.columns = [re.sub(r'[^a-zA-Z0-9]', '_', col.lower().strip()) for col in df.columns]
     return df
 
 # Function to infer column types
 def infer_column_types(df):
-    """Infer column types (numeric, categorical, binary) dynamically."""
     types = {}
     for col in df.columns:
         if pd.api.types.is_numeric_dtype(df[col]):
@@ -38,20 +36,19 @@ def infer_column_types(df):
 
 # Function to process natural language queries
 def process_query(df, query, col_types):
-    """Process user query and return text response or chart."""
     query = query.lower().strip()
     
     # Handle missing values
     df = df.fillna({col: df[col].mean() if col_types[col] == 'numeric' else 'missing' for col in df.columns})
     
-    # Statistical summaries (e.g., "average income")
+    # Statistical summaries
     if 'average' in query or 'mean' in query:
         for col in df.columns:
             if col_types[col] == 'numeric' and col in query:
                 result = df[col].mean()
                 return f"Average {col.replace('_', ' ')}: {result:.2f}", None
     
-    # Filtered queries (e.g., "how many customers are under 30")
+    # Filtered queries
     elif 'how many' in query or 'count' in query:
         for col in df.columns:
             if col in query:
@@ -67,7 +64,7 @@ def process_query(df, query, col_types):
                         result = df[df[col] == value].shape[0]
                     return f"Count of {col.replace('_', ' ')} {op} {value}: {result}", None
     
-    # Grouped queries (e.g., "compare sales by region")
+    # Grouped queries
     elif 'compare' in query or 'by' in query:
         for col in df.columns:
             if col_types[col] == 'categorical' and col in query:
@@ -80,22 +77,23 @@ def process_query(df, query, col_types):
                                 color_discrete_sequence=['#36A2EB'])
                     return result.to_markdown(index=False), fig
     
-    # Visualization queries (e.g., "show a bar chart of job")
+    # Visualization queries
     elif 'bar chart' in query or 'distribution' in query:
         for col in df.columns:
             if col_types[col] == 'categorical' and col in query:
                 counts = df[col].value_counts().reset_index()
                 counts.columns = [col, 'count']
-                fig = fx.bar(counts, x=col, y='count', 
+                fig = px.bar(counts, x=col, y='count', 
                             title=f"Distribution of {col.replace('_', ' ')}",
                             color_discrete_sequence=['#FF6384'])
                 return counts.to_markdown(index=False), fig
     
-    return "Sorry, I couldn't understand the query. Please try rephrasing!", None
+    return "Sorry, I couldn't understand the query. Try rephrasing!", None
 
 # Streamlit app
 st.set_page_config(page_title="NeoStats Assistant", layout="wide")
-st.title("NeoStats Conversational(\"Upload an Excel file (.xlsx) and ask questions about your data in plain English.")
+st.title("NeoStats Conversational Assistant")
+st.markdown("Upload an Excel file (.xlsx) and ask questions in plain English.")
 
 # File upload
 uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"], key="file_uploader")
