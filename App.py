@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import openai  # Required for ChatGPT integration
 import matplotlib.pyplot as plt
-import os
 import base64
 from dotenv import load_dotenv
 
