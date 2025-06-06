@@ -18,7 +18,7 @@ except ImportError:
 genai.configure(api_key="YOUR GEMINI AI API KEY")
 
 def load_excel(file):
-    df = pd.read_excel(file)
+    df = pd.read_excel(file) 
     return df
 
 def normalize_percentages(df, column_name):
@@ -49,10 +49,10 @@ def generate_python_code(user_query, df_columns):
     prompt = f"""
         You are a Python data analysis and visualization expert. Your task is to generate Python code that processes a Pandas DataFrame based on a user's natural language query. The generated function should:
 
-1. Be named `process_dataframe_query`.
+1. Be named process_dataframe_query.
 2. Accept two arguments:
-   - `df`: A Pandas DataFrame containing the data.
-   - `query`: A string containing the user's query.
+   - df: A Pandas DataFrame containing the data.
+   - query: A string containing the user's query.
 3. Perform operations or visualizations as described in the query.
 4. Return one of the following based on the query:
    - A new Pandas DataFrame (e.g., after filtering, sorting, or grouping).
@@ -60,7 +60,7 @@ def generate_python_code(user_query, df_columns):
    - A Matplotlib figure for visualizations (e.g., bar chart, pie chart, or scatter plot).
 
 **Guidelines**:
-- For visualization queries, create the appropriate chart and return the `Matplotlib` figure object.
+- For visualization queries, create the appropriate chart and return the Matplotlib figure object.
 - For data transformations (e.g., filtering or sorting), return a new DataFrame.
 - If the query is unclear or unsupported, return an error message as a string.
 
@@ -87,12 +87,14 @@ User Query: {user_query}
 def execute_code_query(df, user_query):
     code = generate_python_code(user_query, df.columns)
     
+    # Save the generated code to a temporary file
     file_path = "generated_code.py"
     try:
         with open(file_path, "w") as f:
             f.write(code)
         delete_first_last_lines(file_path)
 
+        # Dynamically import the generated code
         spec = importlib.util.spec_from_file_location("generated_module", file_path)
         generated_module = importlib.util.module_from_spec(spec)
         try:
@@ -102,7 +104,17 @@ def execute_code_query(df, user_query):
             subprocess.check_call([sys.executable, "-m", "pip", "install", missing_module])
             spec.loader.exec_module(generated_module)
 
+        # Execute the function in the generated module
         result = generated_module.process_dataframe_query(df, user_query)
+
+        # Handle visualizations or DataFrame responses
+        # if isinstance(result, plt.Figure):
+        #     st.pyplot(result)
+        #     plt.close(result)
+        # elif isinstance(result, pd.DataFrame):
+        #     st.write(result)  # Display filtered or processed DataFrame
+        # else:
+        #     st.write(result)  # Display other outputs like text or summaries
 
         os.remove(file_path)  # Clean up the generated code file
         return result
@@ -118,7 +130,7 @@ def execute_code_query(df, user_query):
 
 def save_to_excel(df):
     output = BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:  # Ensure xlsxwriter is used
         df.to_excel(writer, index=False)
     output.seek(0)
     return output
@@ -128,11 +140,12 @@ def main():
     st.set_page_config(page_title="Excel Query Chatbot with AI", layout="wide")
     st.title("Excel Query Chatbot with AI")
 
-    uploaded_file = st.file_uploader("Upload your Excel file", type=["xlsx"])
-    if uploaded_file:
-        df = load_excel(uploaded_file)
+    # Hardcoded file path to load data
+    file_path = r"C:\Users\saiki\OneDrive\Desktop\SAI\Projects\Excel_Chat\streamlitchat\datafile.xlsx"  # Update this path with your Excel file
+    if os.path.exists(file_path):
+        df = load_excel(file_path)
         df = normalize_percentages(df, "Progress")
-        st.write("Data Preview:", df.head())
+        st.write("Data Preview:", df.head(0))
 
         user_query = st.text_input("Ask a question about the data")
         if user_query:
@@ -155,7 +168,7 @@ def main():
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
     else:
-        st.info("Please upload an Excel file to get started.")
+        st.error(f"File '{file_path}' not found. Please ensure the file exists.")
 
 if __name__ == "__main__":
     main()
