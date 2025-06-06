@@ -4,11 +4,17 @@ import pandas as pd
 import re
 from io import BytesIO
 
-# Check for Plotly and provide user-friendly error message
+# Dependency checks
 try:
     import plotly.express as px
 except ModuleNotFoundError:
-    st.error("Plotly is not installed. Please install it using 'pip install plotly' or add it to requirements.txt.")
+    st.error("Plotly is not installed. Please add 'plotly==5.24.1' to requirements.txt and reboot the app.")
+    st.stop()
+
+try:
+    import openpyxl
+except ModuleNotFoundError:
+    st.error("Openpyxl is not installed. Please add 'openpyxl==3.1.5' to requirements.txt and reboot the app.")
     st.stop()
 
 # Function to clean and normalize column names
@@ -80,7 +86,7 @@ def process_query(df, query, col_types):
             if col_types[col] == 'categorical' and col in query:
                 counts = df[col].value_counts().reset_index()
                 counts.columns = [col, 'count']
-                fig = px.bar(counts, x=col, y='count', 
+                fig = fx.bar(counts, x=col, y='count', 
                             title=f"Distribution of {col.replace('_', ' ')}",
                             color_discrete_sequence=['#FF6384'])
                 return counts.to_markdown(index=False), fig
@@ -89,8 +95,7 @@ def process_query(df, query, col_types):
 
 # Streamlit app
 st.set_page_config(page_title="NeoStats Assistant", layout="wide")
-st.title("NeoStats Conversational Assistant")
-st.markdown("Upload an Excel file (.xlsx) and ask questions about your data in plain English.")
+st.title("NeoStats Conversational(\"Upload an Excel file (.xlsx) and ask questions about your data in plain English.")
 
 # File upload
 uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx"], key="file_uploader")
