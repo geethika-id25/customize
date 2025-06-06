@@ -4,6 +4,7 @@ import openai
 import matplotlib.pyplot as plt
 import io
 import os
+import base64  # Added missing import for base64
 from dotenv import load_dotenv
 
 # Load environment variables
