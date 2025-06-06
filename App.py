@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
-import openai
+import openai  # Required for ChatGPT integration
 import matplotlib.pyplot as plt
 import io
 import os
-import base64  # Added missing import for base64
+import base64
 from dotenv import load_dotenv
 
 # Load environment variables
