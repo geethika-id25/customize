@@ -1,32 +1,29 @@
 **Excel Query Chatbot with AI**
-This project is a Streamlit-based application that enables users to upload Excel files, ask natural language queries about the data, and receive actionable insights or visualizations. The chatbot uses Google’s Generative AI API (Gemini) to interpret queries and generate Python code for data analysis and visualization.
+This project is about  users to upload Excel files, ask natural language queries about the data, and receive actionable insights or visualizations. The chatbot uses Google’s Generative AI API (Gemini) to interpret queries and generate Python code for data analysis and visualization.
 
-**Features**
-For "ExcelChat1.py" excel File Upload: the file and the path have to be set in code.
-For "ExcelChat1.py" excel File Upload: Users can upload their Excel files directly via the Streamlit dashboard.
-AI-Powered Query Handling: The chatbot interprets natural language queries to process and analyze data.
-Data Visualizations: Automatically generates Matplotlib-based visualizations based on user queries.
-Dynamic Data Processing: Filters, sorts, or summarizes data as requested.
-Downloadable Outputs: Provides options to download processed data or visualizations.
-Streamlit Interface: Simple and interactive web interface for seamless user experience.
+In today's data-driven world, working with Excel files is an everyday task for many professionals. But what if you could interact with your data using natural language instead of complex formulas or endless scrolling? That's where BChat Excel comes in!
 
-**How It Works**
-Upload Your Excel File: Upload an Excel file in .xlsx format.
-Ask Questions: Enter your queries, such as:
-"Filter rows where progress is less than 50%."
-"Show progress distribution as a pie chart."
-"What is the total count of completed tasks?"
-Receive Insights: Get processed data, visualizations, or summary statistics based on your query.
-Download Results: Download the processed data or updated Excel file.
-Prerequisites
-Ensure the following dependencies are installed on your system:
+What is BChat Excel?
 
-Python 3.8+
-Pandas
-Streamlit
-Matplotlib
-OpenPyXL
-XlsxWriter
-Google Generative AI Python SDK
+BChat Excel is a web-based application built with Streamlit that allows you to upload an Excel file and ask questions about the data in natural language. Powered by cutting-edge language models and embeddings from LangChain, BChat Excel processes your Excel data, enabling you to have a seamless conversational experience with your datasets.
 
+🛠️ Key Features:
+Upload & Preview Data:
+
+Upload any Excel file, and BChat Excel will instantly provide you with a preview of the data.
+Intelligent Text Processing:
+
+Utilizes the Recursive Character Text Splitter to handle and process large amounts of data by splitting it into manageable chunks.
+Embeddings for Efficient Search:
+
+Leverages the power of Ollama Embeddings for creating vector representations of your data, making it possible to perform rapid and accurate text-based searches.
+Advanced Language Model Integration:
+
+Uses the Llama2 model from Ollama, fine-tuned to understand and respond to queries related to your data.
+Multi-Query Retriever:
+
+Implements a MultiQueryRetriever to refine search results and provide accurate answers based on the context of your data.
+Conversational Interface:
+
+The chat-like interface mimics a conversation with an AI assistant, making it easy to ask follow-up questions or dive deeper into your dataset.
 
